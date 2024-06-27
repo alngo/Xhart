@@ -1,0 +1,22 @@
+[package]
+name = "chart"
+version = "0.1.0"
+authors = ["Alex Ngo <>"]
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "Chart"
+path = "src/main.rs"
+
+[dependencies]
+
+[workspace]
+members = [ 
+    "src/registration",
+    "src/authentication"
+]
+
+[patch.crates-io]
+registration   = {path = "src/registration"}
+authentication = {path = "src/authentication"}
