@@ -45,7 +45,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     form_data.insert("email", "world@world.com");
 
     let response = client
-        .post(&format!("{}/subscriptions", &address))
+        .post(&format!("{}/subscribe", &address))
         .json(&form_data)
         .send()
         .await
@@ -65,7 +65,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     form_data.insert("email", "world@world.com");
 
     let response = client
-        .post(&format!("{}/subscriptions", &address))
+        .post(&format!("{}/subscribe", &address))
         .json(&form_data)
         .send()
         .await
