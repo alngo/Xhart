@@ -59,18 +59,21 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     let address = utils::spawn_app().await;
     let client = reqwest::Client::new();
 
-    //TODO: Add test_cases
+    let test_cases = vec![
+        HashMap::from([("email", "world@world.com")]),
+        HashMap::from([("name", "world")]),
+        HashMap::new()
+    ];
 
-    let mut form_data = HashMap::new();
-    form_data.insert("email", "world@world.com");
+    for form in test_cases {
+        let response = client
+            .post(&format!("{}/subscribe", &address))
+            .json(&form)
+            .send()
+            .await
+            .expect("Failed to execute request.");
 
-    let response = client
-        .post(&format!("{}/subscribe", &address))
-        .json(&form_data)
-        .send()
-        .await
-        .expect("Failed to execute request.");
+        assert_eq!(400, response.status().as_u16(), "failed!");
+    }
 
-    // TODO: Add custom error message
-    assert_eq!(400, response.status().as_u16());
 }

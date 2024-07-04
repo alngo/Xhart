@@ -1,5 +1,12 @@
-use axum::{http::StatusCode, routing::{get, post}, serve::Serve, Router, extract};
-use serde::Deserialize;
+mod domain;
+use axum::{
+    extract,
+    http::StatusCode,
+    routing::{get, post},
+    serve::Serve,
+    Router,
+};
+use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
 
 type Server = Serve<Router, Router>;
@@ -11,6 +18,12 @@ async fn health_check() -> StatusCode {
 struct Subscriber {
     name: String,
     email: String,
+}
+
+#[derive(Serialize)]
+struct Subscribed {
+    id: usize,
+    name: String,
 }
 
 async fn subscribe(extract::Json(_payload): extract::Json<Subscriber>) -> StatusCode {
