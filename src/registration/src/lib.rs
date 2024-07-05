@@ -6,6 +6,7 @@ use axum::{
     serve::Serve,
     Router,
 };
+
 use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
 
@@ -14,6 +15,7 @@ type Server = Serve<Router, Router>;
 async fn health_check() -> StatusCode {
     StatusCode::OK
 }
+
 #[derive(Deserialize)]
 struct Subscriber {
     name: String,

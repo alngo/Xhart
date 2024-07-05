@@ -7,12 +7,12 @@ pub trait IUserCounter {
 }
 
 #[cfg_attr(test, automock)]
-trait IBusinessRule {
+pub trait IBusinessRule {
     fn is_broken(&self) -> bool;
     fn message(&self) -> String;
 }
 
-struct UserEmailMustBeUnique<'c, C> {
+pub struct UserEmailMustBeUnique<'c, C> {
     user_counter: &'c C,
     email: String
 }

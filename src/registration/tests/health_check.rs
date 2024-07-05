@@ -41,7 +41,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     let client = reqwest::Client::new();
 
     let mut form_data = HashMap::new();
-    form_data.insert("name", "hello");
+    form_data.insert("username", "hello");
     form_data.insert("email", "world@world.com");
 
     let response = client
@@ -61,7 +61,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
 
     let test_cases = vec![
         HashMap::from([("email", "world@world.com")]),
-        HashMap::from([("name", "world")]),
+        HashMap::from([("username", "world")]),
         HashMap::new()
     ];
 
