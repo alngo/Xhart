@@ -1,19 +1,6 @@
-#[cfg(test)]
-use mockall::automock;
+use crate::domain::abstract_repository::Repository;
 
-use crate::domain::subscriber::Subscriber;
-
-#[cfg_attr(test, automock)]
-pub trait SubscriberRepository {
-    fn create(&self, subscriber: Subscriber) -> Result<(), String>;
-    fn is_email_unique(&self, email: &String) -> bool;
-}
-
-#[cfg_attr(test, automock)]
-pub trait IBusinessRule {
-    fn is_broken(&self) -> bool;
-    fn message(&self) -> String;
-}
+use super::abstract_rule::BusinessRule;
 
 pub struct UserEmailMustBeUnique<'r, R> {
     subscriber_repository: &'r R,
@@ -22,7 +9,7 @@ pub struct UserEmailMustBeUnique<'r, R> {
 
 impl<'r, R> UserEmailMustBeUnique<'r, R>
 where
-    R: SubscriberRepository,
+    R: Repository,
 {
     pub fn new(subscriber_repository: &'r R, email: String) -> Self {
         UserEmailMustBeUnique {
@@ -32,12 +19,14 @@ where
     }
 }
 
-impl<'r, R> IBusinessRule for UserEmailMustBeUnique<'r, R>
+impl<'r, R> BusinessRule for UserEmailMustBeUnique<'r, R>
 where
-    R: SubscriberRepository,
+    R: Repository,
 {
     fn is_broken(&self) -> bool {
-        self.subscriber_repository.is_email_unique(&self.email)
+        self.subscriber_repository
+            .get_by_email(&self.email)
+            .is_some()
     }
 
     fn message(&self) -> String {

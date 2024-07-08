@@ -1,14 +1,7 @@
+use crate::domain::abstract_repository::Repository;
 use crate::domain::subscriber::Subscriber;
 
-#[cfg(test)]
-use mockall::automock;
 use serde::{Deserialize, Serialize};
-
-#[cfg_attr(test, automock)]
-pub trait Repository {
-    fn create(&self, subscriber: Subscriber) -> Result<(), String>;
-    fn is_email_unique(&self, email: String) -> Result<bool, String>;
-}
 
 pub trait UseCase {
     type Request;
@@ -17,15 +10,16 @@ pub trait UseCase {
     fn execute(&self, request: Self::Request) -> Self::Response;
 }
 
-#[derive(Deserialize)]
-struct SubscribeRequest {
-    name: String,
+#[derive(Deserialize, Debug, PartialEq, Eq)]
+pub struct SubscribeRequest {
+    username: String,
     email: String,
 }
 
-#[derive(Serialize)]
-struct SubscribeResponse {
-    name: String,
+#[derive(Serialize, Debug, PartialEq, Eq)]
+pub struct SubscribeResponse {
+    id: uuid::Uuid,
+    username: String,
     email: String,
 }
 
@@ -50,12 +44,47 @@ where
     type Response = SubscribeResponse;
 
     fn execute(&self, request: Self::Request) -> Self::Response {
-        let subscriber = Subscriber::subscribe(request.name, request.email, self.repository);
-        self.repository.create(subscriber).unwrap();
+        let subscriber = Subscriber::subscribe(&request.username, &request.email, self.repository);
+        let id = self.repository.create(subscriber.unwrap()).unwrap();
 
         SubscribeResponse {
-            name: request.name,
+            id,
+            username: request.username,
             email: request.email,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::abstract_repository::MockRepository;
+
+    #[test]
+    fn test_subscribe() {
+        let id = uuid::Uuid::now_v7();
+        let username = "test".to_string();
+        let email = "test@email.com".to_string();
+
+        let request = SubscribeRequest { username, email };
+
+        let mut repository = MockRepository::new();
+        repository
+            .expect_get_by_email()
+            .times(1)
+            .returning(|_| None);
+        repository.expect_create().times(1).returning(|id| Ok(id));
+
+        let use_case = Subscribe::new(&repository);
+        let response = use_case.execute(request);
+
+        assert_eq!(
+            response,
+            SubscribeResponse {
+                id,
+                username,
+                email
+            }
+        )
     }
 }

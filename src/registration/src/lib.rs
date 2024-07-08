@@ -1,4 +1,5 @@
-mod application; mod domain;
+mod application;
+mod domain;
 use axum::{
     extract,
     http::StatusCode,
