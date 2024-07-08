@@ -62,7 +62,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     let test_cases = vec![
         HashMap::from([("email", "world@world.com")]),
         HashMap::from([("username", "world")]),
-        HashMap::new()
+        HashMap::new(),
     ];
 
     for form in test_cases {
@@ -75,5 +75,4 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
 
         assert_eq!(400, response.status().as_u16(), "failed!");
     }
-
 }

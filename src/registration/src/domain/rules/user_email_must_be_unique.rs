@@ -14,24 +14,24 @@ pub trait IBusinessRule {
 
 pub struct UserEmailMustBeUnique<'c, C> {
     user_counter: &'c C,
-    email: String
+    email: String,
 }
 
-impl <'c, C> UserEmailMustBeUnique<'c, C>
+impl<'c, C> UserEmailMustBeUnique<'c, C>
 where
-    C: IUserCounter
+    C: IUserCounter,
 {
     pub fn new(user_counter: &'c C, email: String) -> Self {
         UserEmailMustBeUnique {
             user_counter,
-            email
+            email,
         }
     }
 }
 
 impl<'c, C> IBusinessRule for UserEmailMustBeUnique<'c, C>
 where
-    C: IUserCounter
+    C: IUserCounter,
 {
     fn is_broken(&self) -> bool {
         self.user_counter.count_user_by_email(&self.email) > 0
