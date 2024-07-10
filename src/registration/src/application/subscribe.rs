@@ -3,12 +3,7 @@ use crate::domain::subscriber::Subscriber;
 
 use serde::{Deserialize, Serialize};
 
-pub trait UseCase {
-    type Request;
-    type Response;
-
-    fn execute(&self, request: Self::Request) -> Self::Response;
-}
+use super::abstract_use_case::UseCase;
 
 #[derive(Deserialize, Debug, PartialEq, Eq)]
 pub struct SubscribeRequest {
@@ -43,14 +38,14 @@ where
     type Request = SubscribeRequest;
     type Response = SubscribeResponse;
 
-    fn execute(&self, request: Self::Request) -> Self::Response {
+    fn execute(&self, request: &Self::Request) -> Self::Response {
         let subscriber = Subscriber::subscribe(&request.username, &request.email, self.repository);
         let id = self.repository.create(subscriber.unwrap()).unwrap();
 
         SubscribeResponse {
             id,
-            username: request.username,
-            email: request.email,
+            username: request.username.clone(),
+            email: request.email.clone(),
         }
     }
 }
@@ -65,26 +60,28 @@ mod tests {
         let id = uuid::Uuid::now_v7();
         let username = "test".to_string();
         let email = "test@email.com".to_string();
+        let mut repository = MockRepository::new();
 
         let request = SubscribeRequest { username, email };
 
-        let mut repository = MockRepository::new();
         repository
             .expect_get_by_email()
             .times(1)
             .returning(|_| None);
-        repository.expect_create().times(1).returning(|id| Ok(id));
+        repository
+            .expect_create()
+            .times(1)
+            .returning(move |_| Ok(id));
 
-        let use_case = Subscribe::new(&repository);
-        let response = use_case.execute(request);
+        let response = Subscribe::new(&repository).execute(&request);
 
         assert_eq!(
             response,
             SubscribeResponse {
                 id,
-                username,
-                email
+                username: request.username,
+                email: request.email,
             }
-        )
+        );
     }
 }

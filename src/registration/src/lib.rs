@@ -1,5 +1,6 @@
 mod application;
 mod domain;
+mod infrastructure;
 use axum::{
     extract,
     http::StatusCode,
@@ -19,7 +20,7 @@ async fn health_check() -> StatusCode {
 
 #[derive(Deserialize)]
 struct SubscriberForm {
-    name: String,
+    username: String,
     email: String,
 }
 

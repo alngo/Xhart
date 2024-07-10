@@ -55,7 +55,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 }
 
 #[tokio::test]
-async fn subscribe_returns_a_400_when_data_is_missing() {
+async fn subscribe_returns_a_422_when_data_is_missing() {
     let address = utils::spawn_app().await;
     let client = reqwest::Client::new();
 
@@ -73,6 +73,6 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
             .await
             .expect("Failed to execute request.");
 
-        assert_eq!(400, response.status().as_u16(), "failed!");
+        assert_eq!(422, response.status().as_u16(), "failed!");
     }
 }
