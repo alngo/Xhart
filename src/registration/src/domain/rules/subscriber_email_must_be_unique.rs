@@ -49,7 +49,10 @@ mod tests {
             .times(1)
             .returning(|_| None);
 
-        assert_eq!(false, SubscriberEmailMustBeUnique::new(&repository, email).is_broken());
+        assert_eq!(
+            false,
+            SubscriberEmailMustBeUnique::new(&repository, email).is_broken()
+        );
     }
 
     #[test]
@@ -62,6 +65,9 @@ mod tests {
             .times(1)
             .returning(|_| Some(uuid::Uuid::now_v7()));
 
-        assert_eq!(true, SubscriberEmailMustBeUnique::new(&repository, email).is_broken());
+        assert_eq!(
+            true,
+            SubscriberEmailMustBeUnique::new(&repository, email).is_broken()
+        );
     }
 }

@@ -1,17 +1,16 @@
-use regex::Regex;
 use super::abstract_rule::BusinessRule;
+use regex::Regex;
 
-const EMAIL_REGEX: &str = r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})";
+const EMAIL_REGEX: &str =
+    r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})";
 
-pub struct SubscriberEmailMustBeValid { 
-    email: String
+pub struct SubscriberEmailMustBeValid {
+    email: String,
 }
 
 impl SubscriberEmailMustBeValid {
     pub fn new(email: String) -> Self {
-        SubscriberEmailMustBeValid {
-            email
-        }
+        SubscriberEmailMustBeValid { email }
     }
 }
 

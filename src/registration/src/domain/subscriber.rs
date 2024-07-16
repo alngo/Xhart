@@ -1,6 +1,9 @@
 use crate::domain::rules::{error::BusinessRuleError, subscriber_email_must_be_unique::*};
 
-use super::{abstract_entity::Entity, abstract_repository::Repository, rules::subscriber_email_must_be_valid::SubscriberEmailMustBeValid};
+use super::{
+    abstract_entity::Entity, abstract_repository::Repository,
+    rules::subscriber_email_must_be_valid::SubscriberEmailMustBeValid,
+};
 
 pub type Email = String;
 pub type Username = String;
