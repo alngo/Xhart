@@ -1,30 +1,30 @@
-use crate::domain::abstract_repository::Repository;
+use crate::domain::abstract_repository::UserRepository;
 
 use super::abstract_rule::BusinessRule;
 
-pub struct SubscriberEmailMustBeUnique<'r, R> {
-    subscriber_repository: &'r R,
-    email: String,
+pub struct UserEmailMustBeUnique<'r, 's, R> {
+    user_repository: &'r R,
+    email: &'s String,
 }
 
-impl<'r, R> SubscriberEmailMustBeUnique<'r, R>
+impl<'r, 's, R> UserEmailMustBeUnique<'r, 's, R> 
 where
-    R: Repository,
+    R: UserRepository,
 {
-    pub fn new(subscriber_repository: &'r R, email: String) -> Self {
-        SubscriberEmailMustBeUnique {
-            subscriber_repository,
+    pub fn new(user_repository: &'r R, email: &'s String) -> Self {
+        UserEmailMustBeUnique {
+            user_repository,
             email,
         }
     }
 }
 
-impl<'r, R> BusinessRule for SubscriberEmailMustBeUnique<'r, R>
+impl<'r, 's, R> BusinessRule for UserEmailMustBeUnique<'r, 's,  R>
 where
-    R: Repository,
+    R: UserRepository,
 {
     fn is_broken(&self) -> bool {
-        self.subscriber_repository
+        self.user_repository
             .get_by_email(&self.email)
             .is_some()
     }
@@ -37,13 +37,13 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::abstract_repository::MockRepository;
+    use crate::domain::abstract_repository::MockUserRepository;
 
     #[test]
     fn test_subscriber_email_must_be_unique() {
         let email = "test@email.com".to_string();
 
-        let mut repository = MockRepository::new();
+        let mut repository = MockUserRepository::new();
         repository
             .expect_get_by_email()
             .times(1)
@@ -51,7 +51,7 @@ mod tests {
 
         assert_eq!(
             false,
-            SubscriberEmailMustBeUnique::new(&repository, email).is_broken()
+            UserEmailMustBeUnique::new(&repository, &email).is_broken()
         );
     }
 
@@ -59,7 +59,7 @@ mod tests {
     fn test_subscriber_email_must_be_unique_is_broken() {
         let email = "test@email.com".to_string();
 
-        let mut repository = MockRepository::new();
+        let mut repository = MockUserRepository::new();
         repository
             .expect_get_by_email()
             .times(1)
@@ -67,7 +67,7 @@ mod tests {
 
         assert_eq!(
             true,
-            SubscriberEmailMustBeUnique::new(&repository, email).is_broken()
+            UserEmailMustBeUnique::new(&repository, &email).is_broken()
         );
     }
 }

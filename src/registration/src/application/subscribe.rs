@@ -1,12 +1,13 @@
-use crate::domain::abstract_repository::Repository;
-use crate::domain::subscriber::Subscriber;
+use crate::domain::abstract_repository::UserRepository;
+use crate::domain::user::User;
 
 use serde::{Deserialize, Serialize};
 
-use super::abstract_use_case::UseCase;
+use super::abstract_handler::Handler;
 
 #[derive(Deserialize, Debug, PartialEq, Eq)]
-pub struct SubscribeRequest {
+pub struct SubscribeCommand {
+    id: uuid::Uuid,
     username: String,
     email: String,
 }
@@ -14,8 +15,6 @@ pub struct SubscribeRequest {
 #[derive(Serialize, Debug, PartialEq, Eq)]
 pub struct SubscribeResponse {
     id: uuid::Uuid,
-    username: String,
-    email: String,
 }
 
 pub struct Subscribe<'r, R> {
@@ -24,28 +23,26 @@ pub struct Subscribe<'r, R> {
 
 impl<'r, R> Subscribe<'r, R>
 where
-    R: Repository,
+    R: UserRepository,
 {
     pub fn new(repository: &'r R) -> Self {
         Self { repository }
     }
 }
 
-impl<'r, R> UseCase for Subscribe<'r, R>
+impl<'r, R> Handler for Subscribe<'r, R>
 where
-    R: Repository,
+    R: UserRepository,
 {
-    type Request = SubscribeRequest;
+    type Command = SubscribeCommand;
     type Response = SubscribeResponse;
 
-    fn execute(&self, request: &Self::Request) -> Self::Response {
-        let subscriber = Subscriber::subscribe(&request.username, &request.email, self.repository);
-        let id = self.repository.create(subscriber.unwrap()).unwrap();
-
+    fn handle(&self, command: &Self::Command) -> Self::Response {
+        let subscriber = User::subscribe(command.id, &command.username, &command.email, self.repository);
+        self.repository.create(subscriber.unwrap()).unwrap();
+        
         SubscribeResponse {
-            id,
-            username: request.username.clone(),
-            email: request.email.clone(),
+            id: command.id,
         }
     }
 }
@@ -53,16 +50,16 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::abstract_repository::MockRepository;
+    use crate::domain::abstract_repository::MockUserRepository;
 
     #[test]
     fn test_subscribe() {
         let id = uuid::Uuid::now_v7();
         let username = "test".to_string();
         let email = "test@email.com".to_string();
-        let mut repository = MockRepository::new();
+        let mut repository = MockUserRepository::new();
 
-        let request = SubscribeRequest { username, email };
+        let request = SubscribeCommand { id, username, email };
 
         repository
             .expect_get_by_email()
@@ -73,14 +70,12 @@ mod tests {
             .times(1)
             .returning(move |_| Ok(id));
 
-        let response = Subscribe::new(&repository).execute(&request);
+        let response = Subscribe::new(&repository).handle(&request);
 
         assert_eq!(
             response,
             SubscribeResponse {
                 id,
-                username: request.username,
-                email: request.email,
             }
         );
     }

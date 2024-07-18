@@ -1,12 +1,12 @@
 [package]
-name = "chart"
+name = "xhart"
 version = "0.1.0"
 authors = ["Alex Ngo <>"]
 edition = "2021"
 publish = false
 
 [[bin]]
-name = "Chart"
+name = "xhart"
 path = "src/main.rs"
 
 [dependencies]

@@ -4,17 +4,17 @@ use regex::Regex;
 const EMAIL_REGEX: &str =
     r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})";
 
-pub struct SubscriberEmailMustBeValid {
-    email: String,
+pub struct UserEmailMustBeValid<'s> {
+    email: &'s String,
 }
 
-impl SubscriberEmailMustBeValid {
-    pub fn new(email: String) -> Self {
-        SubscriberEmailMustBeValid { email }
+impl<'s> UserEmailMustBeValid<'s> {
+    pub fn new(email: &'s String) -> Self {
+        UserEmailMustBeValid { email }
     }
 }
 
-impl BusinessRule for SubscriberEmailMustBeValid {
+impl BusinessRule for UserEmailMustBeValid<'_> {
     fn is_broken(&self) -> bool {
         self.email.is_empty() || !Regex::new(EMAIL_REGEX).unwrap().is_match(&self.email)
     }
@@ -40,7 +40,7 @@ mod tests {
         ];
 
         for test_case in test_cases {
-            assert_eq!(true, SubscriberEmailMustBeValid::new(test_case).is_broken());
+            assert_eq!(true, UserEmailMustBeValid::new(&test_case).is_broken());
         }
     }
 }

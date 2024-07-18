@@ -1,29 +1,34 @@
-use crate::domain::rules::{error::BusinessRuleError, subscriber_email_must_be_unique::*};
-
 use super::{
-    abstract_entity::Entity, abstract_repository::Repository,
-    rules::subscriber_email_must_be_valid::SubscriberEmailMustBeValid,
+    abstract_entity::Entity, abstract_repository::UserRepository,
+    rules::{
+        error::BusinessRuleError,
+        user_email_must_be_valid::UserEmailMustBeValid,
+        user_email_must_be_unique::UserEmailMustBeUnique, 
+    }
 };
 
 pub type Email = String;
 pub type Username = String;
 
-pub struct Subscriber {
+pub struct User {
+    id: uuid::Uuid,
     username: Username,
     email: Email,
 }
 
-impl Entity for Subscriber {}
+impl Entity for User {}
 
-impl Subscriber {
-    pub fn subscribe<'r, R: Repository>(
+impl User {
+    pub fn subscribe<'r, R: UserRepository>(
+        id: uuid::Uuid,
         username: &Username,
         email: &Email,
         repository: &R,
     ) -> Result<Self, BusinessRuleError> {
-        Subscriber::check_rule(SubscriberEmailMustBeUnique::new(repository, email.clone()))?;
-        Subscriber::check_rule(SubscriberEmailMustBeValid::new(email.clone()))?;
-        Ok(Subscriber {
+        User::check_rule(UserEmailMustBeValid::new(&email))?;
+        User::check_rule(UserEmailMustBeUnique::new(repository, &email))?;
+        Ok(User {
+            id,
             username: username.to_string(),
             email: email.to_string(),
         })
@@ -33,50 +38,53 @@ impl Subscriber {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::abstract_repository::MockRepository;
+    use crate::domain::abstract_repository::MockUserRepository;
 
     #[test]
     fn test_subscribe_is_ok() {
+        let id = uuid::Uuid::now_v7();
         let username = "test".to_string();
         let email = "test@email.com".to_string();
 
-        let mut repository = MockRepository::new();
+        let mut repository = MockUserRepository::new();
         repository
             .expect_get_by_email()
             .times(1)
             .returning(|_| None);
 
-        let result = Subscriber::subscribe(&username, &email, &repository);
+        let result = User::subscribe(id, &username, &email, &repository);
         assert!(result.is_ok());
     }
 
     #[test]
     fn test_subscribe_email_must_be_unique() {
+        let id = uuid::Uuid::now_v7();
         let username = "test".to_string();
         let email = "test@email.com".to_string();
 
-        let mut repository = MockRepository::new();
+        let mut repository = MockUserRepository::new();
         repository
             .expect_get_by_email()
             .times(1)
             .returning(|_| Some(uuid::Uuid::now_v7()));
 
-        let result = Subscriber::subscribe(&username, &email, &repository);
+        let result = User::subscribe(id, &username, &email, &repository);
         assert!(result.is_err());
     }
 
     #[test]
     fn test_subscribe_email_must_be_valid() {
+        let id = uuid::Uuid::now_v7();
         let username = "test".to_string();
         let email = "".to_string();
 
-        let mut repository = MockRepository::new();
+        let mut repository = MockUserRepository::new();
         repository
             .expect_get_by_email()
-            .times(1)
+            .times(0)
             .returning(|_| None);
 
-        let result = Subscriber::subscribe(&username, &email, &repository);
+        let result = User::subscribe(id, &username, &email, &repository);
         assert!(result.is_err());
     }
 }
