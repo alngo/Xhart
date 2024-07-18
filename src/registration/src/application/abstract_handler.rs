@@ -1,6 +1,6 @@
 pub trait Handler {
-    type Command;
+    type Request;
     type Response;
 
-    fn handle(&self, command: &Self::Command) -> Self::Response;
+    fn handle(&self, request: &Self::Request) -> Self::Response;
 }

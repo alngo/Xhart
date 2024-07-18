@@ -1,10 +1,10 @@
 use super::{
-    abstract_entity::Entity, abstract_repository::UserRepository,
+    abstract_entity::Entity,
+    abstract_repository::UserRepository,
     rules::{
-        error::BusinessRuleError,
+        error::BusinessRuleError, user_email_must_be_unique::UserEmailMustBeUnique,
         user_email_must_be_valid::UserEmailMustBeValid,
-        user_email_must_be_unique::UserEmailMustBeUnique, 
-    }
+    },
 };
 
 pub type Email = String;

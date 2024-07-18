@@ -20,15 +20,9 @@ pub enum UserEvent {
 impl Event for UserEvent {
     fn event_type(&self) -> String {
         match self {
-            UserEvent::NewUserSubscription { .. } => {
-                "NewUserSubscription".to_string()
-            }
-            UserEvent::UserConfirmation { .. } => {
-                "UserConfirmation".to_string()
-            }
-            UserEvent::UserExpiration { .. } => {
-                "UserExpiration".to_string()
-            }
+            UserEvent::NewUserSubscription { .. } => "NewUserSubscription".to_string(),
+            UserEvent::UserConfirmation { .. } => "UserConfirmation".to_string(),
+            UserEvent::UserExpiration { .. } => "UserExpiration".to_string(),
         }
     }
 

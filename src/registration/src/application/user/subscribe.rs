@@ -1,9 +1,9 @@
-use crate::domain::abstract_repository::UserRepository;
-use crate::domain::user::User;
+use crate::{
+    application::abstract_handler::Handler,
+    domain::{abstract_repository::UserRepository, user::User},
+};
 
 use serde::{Deserialize, Serialize};
-
-use super::abstract_handler::Handler;
 
 #[derive(Deserialize, Debug, PartialEq, Eq)]
 pub struct SubscribeCommand {
@@ -34,16 +34,19 @@ impl<'r, R> Handler for Subscribe<'r, R>
 where
     R: UserRepository,
 {
-    type Command = SubscribeCommand;
+    type Request = SubscribeCommand;
     type Response = SubscribeResponse;
 
-    fn handle(&self, command: &Self::Command) -> Self::Response {
-        let subscriber = User::subscribe(command.id, &command.username, &command.email, self.repository);
+    fn handle(&self, request: &Self::Request) -> Self::Response {
+        let subscriber = User::subscribe(
+            request.id,
+            &request.username,
+            &request.email,
+            self.repository,
+        );
         self.repository.create(subscriber.unwrap()).unwrap();
-        
-        SubscribeResponse {
-            id: command.id,
-        }
+
+        SubscribeResponse { id: request.id }
     }
 }
 
@@ -59,7 +62,11 @@ mod tests {
         let email = "test@email.com".to_string();
         let mut repository = MockUserRepository::new();
 
-        let request = SubscribeCommand { id, username, email };
+        let request = SubscribeCommand {
+            id,
+            username,
+            email,
+        };
 
         repository
             .expect_get_by_email()
@@ -72,11 +79,6 @@ mod tests {
 
         let response = Subscribe::new(&repository).handle(&request);
 
-        assert_eq!(
-            response,
-            SubscribeResponse {
-                id,
-            }
-        );
+        assert_eq!(response, SubscribeResponse { id });
     }
 }

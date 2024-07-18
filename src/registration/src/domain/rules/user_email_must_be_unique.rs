@@ -7,7 +7,7 @@ pub struct UserEmailMustBeUnique<'r, 's, R> {
     email: &'s String,
 }
 
-impl<'r, 's, R> UserEmailMustBeUnique<'r, 's, R> 
+impl<'r, 's, R> UserEmailMustBeUnique<'r, 's, R>
 where
     R: UserRepository,
 {
@@ -19,14 +19,12 @@ where
     }
 }
 
-impl<'r, 's, R> BusinessRule for UserEmailMustBeUnique<'r, 's,  R>
+impl<'r, 's, R> BusinessRule for UserEmailMustBeUnique<'r, 's, R>
 where
     R: UserRepository,
 {
     fn is_broken(&self) -> bool {
-        self.user_repository
-            .get_by_email(&self.email)
-            .is_some()
+        self.user_repository.get_by_email(&self.email).is_some()
     }
 
     fn message(&self) -> String {
