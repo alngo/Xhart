@@ -7,11 +7,12 @@ use super::{
     },
 };
 
+pub type UserId = uuid::Uuid;
 pub type Email = String;
 pub type Username = String;
 
 pub struct User {
-    id: uuid::Uuid,
+    id: UserId,
     username: Username,
     email: Email,
 }

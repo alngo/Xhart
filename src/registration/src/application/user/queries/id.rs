@@ -1,16 +1,15 @@
 use serde::{Serialize, Deserialize};
 
-use crate::{domain::abstract_repository::UserRepository, application::abstract_handler::Handler};
+use crate::{domain::{abstract_repository::UserRepository, user::{Email, UserId}}, application::abstract_handler::Handler};
 
 #[derive(Deserialize, Debug, PartialEq, Eq)]
-pub struct InformationQuery {
-    id: uuid::Uuid
+pub struct IdQuery {
+    email: Email
 }
 
 #[derive(Serialize, Debug, PartialEq, Eq)]
-pub struct InformationResponse {
-    id: uuid::Uuid,
-    username: String,
+pub struct IdResponse {
+    id: UserId
 }
 
 pub struct Information<'r, R> {
@@ -30,14 +29,13 @@ impl<'r, R> Handler for Information<'r, R>
 where
     R: UserRepository,
 {
-    type Request = InformationQuery;
-    type Response = InformationResponse;
+    type Request = IdQuery;
+    type Response = IdResponse;
 
     fn handle(&self, request: &Self::Request) -> Self::Response {
-        let response = self.repository.get_by_id(request.id).unwrap();
-        InformationResponse {
-            id: response.id,
-            username: response.username,
+        let response = self.repository.get_by_email(&request.email).unwrap();
+        IdResponse {
+            id: response
         }
     }
 }
