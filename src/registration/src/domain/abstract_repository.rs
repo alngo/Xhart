@@ -1,10 +1,7 @@
 #[cfg(test)]
 use mockall::automock;
 
-use super::user::{
-    User,
-    UserId, Username
-};
+use super::user::{User, UserId};
 
 #[cfg_attr(test, automock)]
 pub trait UserRepository {

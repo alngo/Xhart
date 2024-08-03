@@ -1,5 +1,5 @@
 mod application;
-mod domain;
+pub mod domain;
 mod infrastructure;
 use axum::{
     extract,
