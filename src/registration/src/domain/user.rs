@@ -12,9 +12,9 @@ pub type Email = String;
 pub type Username = String;
 
 pub struct User {
-    id: UserId,
-    username: Username,
-    email: Email,
+    pub id: UserId,
+    pub username: Username,
+    pub email: Email,
 }
 
 impl Entity for User {}

@@ -38,7 +38,7 @@ where
     type Request = IdQuery;
     type Response = IdResponse;
 
-    fn handle(&self, request: &Self::Request) -> Self::Response {
+    fn handle(&mut self, request: &Self::Request) -> Self::Response {
         let response = self.repository.get_by_email(&request.email).unwrap();
         IdResponse { id: response }
     }

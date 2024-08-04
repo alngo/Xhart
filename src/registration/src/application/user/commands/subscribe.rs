@@ -18,14 +18,14 @@ pub struct SubscribeResponse {
 }
 
 pub struct Subscribe<'r, R> {
-    repository: &'r R,
+    repository: &'r mut R,
 }
 
 impl<'r, R> Subscribe<'r, R>
 where
     R: UserRepository,
 {
-    pub fn new(repository: &'r R) -> Self {
+    pub fn new(repository: &'r mut R) -> Self {
         Self { repository }
     }
 }
@@ -37,7 +37,7 @@ where
     type Request = SubscribeCommand;
     type Response = SubscribeResponse;
 
-    fn handle(&self, request: &Self::Request) -> Self::Response {
+    fn handle(&mut self, request: &Self::Request) -> Self::Response {
         let subscriber = User::subscribe(
             request.id,
             &request.username,
@@ -77,7 +77,7 @@ mod tests {
             .times(1)
             .returning(move |_| Ok(id));
 
-        let response = Subscribe::new(&repository).handle(&request);
+        let response = Subscribe::new(&mut repository).handle(&request);
 
         assert_eq!(response, SubscribeResponse { id });
     }

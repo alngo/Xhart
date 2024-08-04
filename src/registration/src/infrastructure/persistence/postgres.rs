@@ -10,7 +10,7 @@ struct PostgresUserRepository {
 }
 
 impl UserRepository for PostgresUserRepository {
-    fn create(&self, user: User) -> Result<UserId, String> {
+    fn create(&mut self, user: User) -> Result<UserId, String> {
         todo!()
     }
 
