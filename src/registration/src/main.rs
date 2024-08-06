@@ -1,4 +1,4 @@
-use registration::run;
+pub use registration::run;
 use tokio::net::TcpListener;
 
 #[tokio::main]

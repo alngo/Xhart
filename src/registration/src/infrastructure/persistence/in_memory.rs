@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn test_get_by_email_non_existing() {
-        let epository = InMemoryUserRepository::new();
+        let repository = InMemoryUserRepository::new();
         let result = repository.get_by_email("email@email.com");
         assert!(result.is_none());
     }
