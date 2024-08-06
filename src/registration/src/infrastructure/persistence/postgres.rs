@@ -1,6 +1,6 @@
 use crate::domain::{
     abstract_repository::UserRepository,
-    user::{User, UserId},
+    user::{Email, User, UserId},
 };
 
 type Connection = String;
@@ -14,7 +14,7 @@ impl UserRepository for PostgresUserRepository {
         todo!()
     }
 
-    fn get_by_email(&self, email: &str) -> Option<UserId> {
+    fn get_by_email(&self, email: &Email) -> Option<UserId> {
         todo!()
     }
 }

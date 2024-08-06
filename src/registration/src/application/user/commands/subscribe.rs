@@ -1,6 +1,9 @@
 use crate::{
     application::abstract_handler::Handler,
-    domain::{abstract_repository::UserRepository, user::User},
+    domain::{
+        abstract_repository::UserRepository,
+        user::{Email, User},
+    },
 };
 
 use serde::{Deserialize, Serialize};
@@ -9,7 +12,7 @@ use serde::{Deserialize, Serialize};
 pub struct SubscribeCommand {
     id: uuid::Uuid,
     username: String,
-    email: String,
+    email: Email,
 }
 
 #[derive(Serialize, Debug, PartialEq, Eq)]
@@ -41,7 +44,7 @@ where
         let subscriber = User::subscribe(
             request.id,
             &request.username,
-            &request.email,
+            request.email.clone(),
             self.repository,
         );
         self.repository.create(subscriber.unwrap()).unwrap();
@@ -59,7 +62,7 @@ mod tests {
     fn test_subscribe() {
         let id = uuid::Uuid::now_v7();
         let username = "test".to_string();
-        let email = "test@email.com".to_string();
+        let email = Email::new("test@email.com").unwrap();
         let mut repository = MockUserRepository::new();
 
         let request = SubscribeCommand {

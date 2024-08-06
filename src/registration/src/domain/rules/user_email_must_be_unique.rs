@@ -1,17 +1,17 @@
-use crate::domain::abstract_repository::UserRepository;
+use crate::domain::{abstract_repository::UserRepository, user::Email};
 
 use super::abstract_rule::BusinessRule;
 
-pub struct UserEmailMustBeUnique<'r, 's, R> {
+pub struct UserEmailMustBeUnique<'r, 'e, R> {
     user_repository: &'r R,
-    email: &'s String,
+    email: &'e Email,
 }
 
-impl<'r, 's, R> UserEmailMustBeUnique<'r, 's, R>
+impl<'r, 'e, R> UserEmailMustBeUnique<'r, 'e, R>
 where
     R: UserRepository,
 {
-    pub fn new(user_repository: &'r R, email: &'s String) -> Self {
+    pub fn new(user_repository: &'r R, email: &'e Email) -> Self {
         UserEmailMustBeUnique {
             user_repository,
             email,
@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn test_subscriber_email_must_be_unique() {
-        let email = "test@email.com".to_string();
+        let email = Email::new("test@email.com").unwrap();
 
         let mut repository = MockUserRepository::new();
         repository
@@ -55,7 +55,7 @@ mod tests {
 
     #[test]
     fn test_subscriber_email_must_be_unique_is_broken() {
-        let email = "test@email.com".to_string();
+        let email = Email::new("test@email.com").unwrap();
 
         let mut repository = MockUserRepository::new();
         repository
